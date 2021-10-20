@@ -1,0 +1,109 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmCount": {
+            "value": 1
+        },
+        "vmPrefix": {
+            "value": "wvd-ddhp"
+        },
+        "vmStartNumber": {
+            "value": 1
+        },
+        "vmSize": {
+            "value": "Standard_B2ms"
+        },
+        "localAdminUsername": {
+            "reference": {
+              "keyVault": {
+              "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+              },
+              "secretName": "vmadminuser"
+            }
+          },
+        "localAdminPassword": {
+            "reference": {
+              "keyVault": {
+              "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+              },
+              "secretName": "vmadminpw"
+            }
+          },
+        "useSIG": {
+            "value": true
+        },
+        "SIG-rg": {
+            "value": "SIGRGName"
+        },
+        "SIGName": {
+            "value": "SIGName"
+        },
+        "SIGDefinition": {
+            "value": "SIGDefinitionName"
+        },
+        "diskType": {
+            "value": "Premium_LRS"
+        },
+        "osDiskSize": {
+            "value": 128
+        },
+        "availabilityOption": {
+            "value": "AvailabilityZone"
+        },
+        "availabilitySetName": {
+            "value": ""
+        },
+        "domain": {
+            "value": "domainFQDN"
+        },
+        "OUPath": {
+            "value": "OUDistinguishedName"
+        },
+        "domainJoinerUPN": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+                },
+                "secretName": "adjoinuser"
+              }
+        },
+        "domainJoinerPassword": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+                },
+                "secretName": "adjoinpw"
+              }
+        },
+        "artifacts-location": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip"
+        },
+        "hostpoolName": {
+            "value": "hostpool-name"
+        },
+        "hostpoolToken": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+                },
+                "secretName": "hostpool-name-token"
+              }
+        },
+        "subnetName": {
+            "value": "subnetName"
+        },
+        "vNetId": {
+            "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/vnetRGName/providers/Microsoft.Network/virtualNetworks/vnetName"
+        },
+        "autoShutdownStatus": {
+            "value": "Disabled"
+        },
+        "autoShutdownTime": {
+            "value": "19:00"
+        },
+        "autoShutdownTimeZone": {
+            "value": "Eastern Standard Time"
+        }
+    }
+}

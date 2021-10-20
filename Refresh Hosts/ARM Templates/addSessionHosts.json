@@ -1,0 +1,355 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmCount": {
+            "type": "int",
+            "metadata": {
+                "description": "Number of hosts that will be created and added to the hostpool." 
+            }
+        },
+        "vmPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "This prefix will be used in combination with the VM number to create the VM name. This value should only includes letters and NOT the dash, so if using “vm” as the prefix, VMs would be named “vm-0”, “vm-1”, etc. You should use a unique prefix to reduce name collisions in Active Directory."
+            }
+        },
+        "vmStartNumber": {
+            "type": "int",
+            "metadata": {
+                "description": "This number will be added the VM count to create the VM name. If you want to start your vms with number 10 you would set it to 10, so if using “vm” as the prefix, VMs names would begin at “vm-11”, “vm-12”, etc... You should use vmStartNumber when you have an existing set of vms and want to add new vms to that pool."
+            },
+            "defaultValue": 1
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the session host VMs."
+            }
+        },
+        "localAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The username for the admin."
+            }
+        },
+        "localAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password that corresponds to the existing domain username."
+            }
+        },
+        "useSIG": {
+            "type": "bool",
+            "defaultValue": true
+        },
+        "SIG-rg": {
+            "type": "string",
+            "metadata": {
+                "description": "RG name of the Azure SIG"
+            }
+        },
+        "SIGName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Azure SIG for your images."
+            }
+        },
+        "SIGDefinition": {
+            "type": "string",
+            "metadata": {
+                "description": "Defnition of the image to use from SIG."
+            }
+        },
+        "diskType": {
+            "type": "string",
+            "allowedValues": [
+                "Premium_LRS",
+                "StandardSSD_LRS",
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "The VM disk type for the VM: HDD or SSD."
+            },
+            "defaultValue": "Premium_LRS"
+        },
+        "osDiskSize": {
+            "type": "int",
+            "metadata": {
+                "description": "Size of the OS disk."
+            },
+            "defaultValue": 128
+        },
+        "availabilityOption": {
+            "type": "string",
+            "metadata": {
+                "description": "The availability option for the VMs."
+            },
+            "defaultValue": "AvailabilityZone",
+            "allowedValues": [
+            "None",
+            "AvailabilitySet",
+            "AvailabilityZone"
+            ]
+        },
+        "availabilitySetName": {
+            "type": "string",
+            "metadata": {
+            "description": "The name of avaiability set to be used when create the VMs."
+            }
+        },
+        "domain": {
+            "type": "string",
+            "metadata": {
+                "description": "Domain to join"
+            },
+            "defaultValue": "domainFQDN"
+        },
+        "OUPath": {
+            "type": "string",
+            "metadata": {
+                "description": "OU Path in standard LDAP format, ie: OU=name,DC=something,DC=com"
+            }
+        },
+        "domainJoinerUPN": {
+            "type": "string",
+            "metadata": {
+                "description": "Admin account username."
+            }
+        },
+        "domainJoinerPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Admin account password for domain join."
+            }
+        },
+        "artifacts-location": {
+            "type": "string",
+            "metadata": {
+                "description": "The base URI where artifacts required by this template are located."
+            },
+            "defaultValue": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip"
+        },
+        "hostpoolName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the hostpool."
+            }
+        },
+        "hostpoolToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The token for adding VMs to the hostpool."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The unique id of the subnet to attach the NICs to."
+            }
+        },
+        "vNetId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource id of the virtual network."
+            }
+        },
+        "autoShutdownStatus": {
+            "type": "string",
+            "metadata": {
+                "description": "The status of the auto-shutdown schedule."
+            },
+            "defaultValue": "Disabled"
+        },
+        "autoShutdownTime": {
+            "type": "string",
+            "metadata": {
+                "description": "The shutdown time."
+            },
+            "defaultValue": "19:00"            
+        },
+        "autoShutdownTimeZone": {
+            "type": "string",
+            "metadata": {
+                "description": "The Time Zone to use for autoShutdownTime."
+            },
+            "defaultValue": "Eastern Standard Time"
+        }
+    },
+    "functions": [],
+    "variables": {
+        "subnetId": "[concat(parameters('vNetId'), '/subnets/', parameters('subnetName'))]",
+        "sharedGalleryImageRef": {
+            "id": "[resourceId(parameters('SIG-rg'), 'Microsoft.Compute/galleries/images', parameters('SIGName'), parameters('SIGDefinition'))]"
+        },
+        "win10ImageRef": {
+            "publisher": "MicrosoftWindowsDesktop",
+            "offer": "Windows-10",
+            "sku": "20h2-evd",
+            "version": "latest"
+        },
+        "vmAvailabilitySetResourceId": {
+            "id": "[resourceId('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2021-03-01",
+            "type": "Microsoft.Compute/virtualMachines",
+            "copy": {
+                "name": "vmLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "DoNotShutDownDays": "0"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '-nic')]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "availabilitySet": "[if(equals(parameters('availabilityOption'), 'AvailabilitySet'), variables('vmAvailabilitySetResourceId'), json('null'))]",
+                "osProfile": {
+                    "computerName": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]",
+                    "adminUsername": "[parameters('localAdminUsername')]",
+                    "adminPassword": "[parameters('localAdminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": "[if(parameters('useSIG'), variables('sharedGalleryImageRef'), variables('win10ImageRef'))]",
+                    "osDisk": {
+                        "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '-disk')]",
+                        "createOption": "FromImage",
+                        "diskSizeGB": "[parameters('osDiskSize')]",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('diskType')]"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '-nic'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                },
+                "licenseType": "Windows_Client"
+            },
+            "zones": [
+                "[if(equals(parameters('availabilityOption'), 'AvailabilityZone'), string(add(mod(copyIndex(0), 3), 1)), json('null'))]"
+            ]
+        },
+        {
+            "apiVersion": "2018-10-01",
+            "type": "Microsoft.Network/networkInterfaces",
+            "copy": {
+                "name": "nicLoop",
+                "count": "[parameters('vmCount')]"
+              },
+            "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '-nic')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig",
+                        "properties": {
+                        "privateIPAllocationMethod": "Dynamic",
+                        "subnet": {
+                            "id": "[variables('subnetId')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2017-04-26-preview",
+            "type": "Microsoft.DevTestLab/schedules",
+            "copy": {
+                "name": "shutdownLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "name": "[concat('shutdown-computevm-', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]",
+
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]"
+            ],
+            "properties": {
+                "status": "[parameters('autoShutdownStatus')]",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "[parameters('autoShutdownTime')]"
+                },
+                "timeZoneId": "[parameters('autoShutdownTimeZone')]",
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0')))]"
+            }
+        },
+        {
+            "apiVersion": "2018-10-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "copy": {
+                "name": "domainLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/joindomain')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "name": "[parameters('domain')]",
+                    "ouPath": "[parameters('OUPath')]",
+                    "user": "[parameters('domainJoinerUPN')]",
+                    "restart": "true",
+                    "options": "3"
+                },
+                "protectedSettings": {
+                    "password": "[parameters('domainJoinerPassword')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2018-10-01",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "copy": {
+                "name": "hostpoolLoop",
+                "count": "[parameters('vmCount')]"
+            },
+            "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/dscextension')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/extensions/joindomain')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.73",
+                "autoUpgradeMinorVersion": true,
+                "protectedSettings": {},
+                "settings": {
+                    "modulesUrl": "[parameters('artifacts-location')]",
+                    "configurationFunction": "Configuration.ps1\\AddSessionHost",
+                    "properties": {
+                        "hostPoolName": "[parameters('hostpoolName')]",
+                        "registrationInfoToken": "[parameters('hostpoolToken')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
