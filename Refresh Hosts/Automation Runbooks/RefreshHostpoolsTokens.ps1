@@ -6,9 +6,10 @@
 .PARAMETER SubscriptionName
 The subscription name
 .NOTES
-  Version:        1.0
+  Version:        1.2
   Author:         David De Backer
-  Creation Date:  20210-05-13
+  Creation Date:  2021-05-13
+  Last Modified: 2022-04-11
 
 #>
 
