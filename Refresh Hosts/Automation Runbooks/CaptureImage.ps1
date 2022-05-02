@@ -135,7 +135,9 @@ $CIGName = "WVD_Gallery"
 $CIGImageDefinitionName = "Win10-20H2"
 $CIGImageVersion = "1.0.0"
 
-Get-AzGalleryImageVersion -GalleryName $CIGName -ResourceGroupName $CIGResourceGroupName -GalleryImageDefinitionName $CIGImageDefinitionName | Select-Object -Property id | Format-List
+$CIGImageVersions = Get-AzGalleryImageVersion -GalleryName $CIGName -ResourceGroupName $CIGResourceGroupName -GalleryImageDefinitionName $CIGImageDefinitionName | Select-Object -Property Name,id
+
+$CIGImageVersions | Sort-Object -Property Name -Descending
 
 
 $sourceImageId = "/subscriptions/$SubscriptionID/resourceGroups/$VMResourceGroupName/providers/Microsoft.Compute/virtualMachines/$VMName"
