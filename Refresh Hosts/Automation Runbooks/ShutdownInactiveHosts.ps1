@@ -9,7 +9,7 @@ The subscription name
 .PARAMETER HostPoolName
     The name of the host pool that you want to target.
 .PARAMETER VMResourceGroupName
-    The name RG containing the VMs of that hostpool.
+    The name of the RG containing the VMs for that hostpool.
 .NOTES
   Version:        0.1
   Author:         David De Backer
@@ -134,62 +134,10 @@ function Get-VMNameFromSessionHost {
      
     return $vmName
 }
-
-function Remove-VMObjects {
+function ShutdownVM {
     <#
       .SYNOPSIS
-      Deletes the  matching VM and its related objects.
-      #>
-      [CmdletBinding()]
-      param (
-        [Parameter(mandatory = $true)]
-        [string]$vmName,
-        [Parameter(mandatory = $true)]
-        [string]$VMResourceGroupName
-      )
-    
-    $vmRGName = $VMResourceGroupName
-    $vm = Get-AzVM -ResourceGroupName $VMResourceGroupName -Name $vmName
-    
-    #Marking OSDisk for deletion.
-    $tags = @{"VMName"=$vm.Name; "Delete Ready"="Yes"}
-    $osDiskName = $vm.StorageProfile.OSDisk.Name
-    $datadisks = $vm.StorageProfile.DataDisks
-    $ResourceID = (Get-Azdisk -Name $osDiskName).id
-    New-AzTag -ResourceId $ResourceID -Tag $tags #| Out-Null
-     
-    #Marking Data disk(s) for deletion.
-    if ($vm.StorageProfile.DataDisks.Count -gt 0) {
-        foreach ($datadisks in $vm.StorageProfile.DataDisks) {
-            $datadiskname=$datadisks.name
-            $ResourceID = (Get-Azdisk -Name $datadiskname).id
-            New-AzTag -ResourceId $ResourceID -Tag $tags | Out-Null
-        }
-    }
-    
-    Write-Output "Removing Virtual Machine $vm.Name in Resource Group $vmRGName."
-    $null = $vm | Remove-AzVM -Force
-    
-    #Removing Network Interface Cards, Public IP Address(s) used by the VM...'
-    foreach($nicUri in $vm.NetworkProfile.NetworkInterfaces.Id) {
-        $nic = Get-AzNetworkInterface -ResourceGroupName $vm.ResourceGroupName -Name $nicUri.Split('/')[-1]
-        Remove-AzNetworkInterface -Name $nic.Name -ResourceGroupName $vm.ResourceGroupName -Force
-        foreach($ipConfig in $nic.IpConfigurations) {
-            if($ipConfig.PublicIpAddress -ne $null) {
-                Remove-AzPublicIpAddress -ResourceGroupName $vm.ResourceGroupName -Name $ipConfig.PublicIpAddress.Id.Split('/')[-1] -Force
-            }
-        }
-    }
-    
-    #Removing OS disk and Data Disk(s) used by the VM.
-    Get-AzResource -tag $tags | Where-Object Resourcegroupname -eq $vmRGName | Remove-AzResource -force
-  
-  }
-
-function Remove-Host {
-    <#
-      .SYNOPSIS
-      Remove the hosts that are in drain mode and have no active user sessions.
+      Shuts down the hosts that have no active user sessions.
       #>
       [CmdletBinding()]
       param (
@@ -209,50 +157,47 @@ function Remove-Host {
     $hostsToProcess = $sessionHosts | Where-Object Session -eq 0
 
     #Retrieving the VMs tagged for update  
-    #$taggedVMs = GetTaggedVMs -VMResourceGroupName $VMResourceGroupName
+    $hostpoolVMs = Get-AzVM -VMResourceGroupName $VMResourceGroupName -Status | Select-Object Name, PowerState
         
     #Looping through our host list
     foreach ($sh in $hostsToProcess) {
         $Error.clear()
         $hpHost = Get-VMNameFromSessionHost($sh)
         Write-Output "hpHost is $hpHost"
-        $shHostName = $sh.Name.Split("/")[1]
-        Write-Output "shHostName is $shHostName"
-        
-
-        $match = 0
-        foreach ($vm in $taggedVMs) {
+                
+        foreach ($vm in $hostpoolVMs) {
             Write-Output "vmName is $vm.Name"
-            #checking whether the host matches any of the tagged VMs names
-            if ($hpHost -eq $vm.Name) {$match +=1}  
-        }
+            #checking whether the host matches any of the VMs names
+            if ($hpHost -eq $vm.Name) {
 
-        #If we got a match we set to proceed with the host removal as well as the deletion of the matching VM artifacts
-        if ($match -gt 0) {
-            Stop-AzVM -ResourceGroupName $VMResourceGroupName -Name $vm.Name
+                Stop-AzVM -ResourceGroupName $VMResourceGroupName -Name $vm.Name -Force
             
-            if (!$Error[0])
-            {
-                $success += 1
-            }
-            else
-            {
-                $failed += 1
-            }
+                if (!$Error[0])
+                {
+                    $success += 1
+                }
+                else
+                {
+                    $failed += 1
+                }
+
+
+            }  
         }
+        
     }
 
     $outputObject = [PSCustomObject]@{
       HostPoolName = $HostPoolName
       TotalHosts = $totalHosts
       ProcessedHosts = ($hostsToProcess).count
-      HostsDeletedSuccess = $success
-      HostsDeletedFailure = $failed
+      VMStoppedSuccess = $success
+      VMStoppedFailure = $failed
     }
 
     return $outputObject
 }
 
-$outToLogicApp = Remove-Host -HostPoolName $HostPoolName -VMResourceGroupName $VMResourceGroupName
+$outToLogicApp = ShutdownVM -HostPoolName $HostPoolName -VMResourceGroupName $VMResourceGroupName
 
 Write-Output ( $outToLogicApp | ConvertTo-Json)
