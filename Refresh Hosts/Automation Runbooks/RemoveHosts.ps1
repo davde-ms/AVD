@@ -11,9 +11,9 @@ The subscription name
 .PARAMETER VMResourceGroupName
     The name RG containing the VMs of that hostpool.
 .NOTES
-  Version:        1.0
+  Version:        1.1
   Author:         David De Backer
-  Creation Date:  20210-06-16
+  Creation Date:  2021-06-16
 
 #>
 

@@ -50,9 +50,6 @@ Param (
   [Parameter(mandatory = $true)]
   [string]$CIGImageDefinitionName,
 
-  [Parameter(mandatory = $true)]
-  [string]$CIGImageVersion,
-
   [Parameter(mandatory = $false)]
   [string]$CIGImageRegions
 
@@ -69,7 +66,11 @@ $verbosePreference = 'Continue'
 $CIGResourceGroupName = "myResourceGroup"
 $CIGName = "myGallery"
 $CIGImageDefinitionName = "myImage"
-$CIGImageVersion = "1.0.0"
+
+# Assuming a dotted versioning format of x.y.z where x is major, y is medium and z is minor
+$imageVersionMajIncreaseStep = 0
+$imageVersionMedIncreaseStep = 0
+$imageVersionMinIncreaseStep = 1
 
 # Start of Authentication Block
 # =============================
@@ -130,15 +131,22 @@ Select-AzSubscription $SubscriptionName | Out-Null
 $SubscriptionID = (Get-AzContext).Subscription.Id
 
 
-$CIGResourceGroupName = "rg_SID"
+$CIGResourceGroupName = "rg_SIG"
 $CIGName = "WVD_Gallery"
 $CIGImageDefinitionName = "Win10-20H2"
-$CIGImageVersion = "1.0.0"
+
 
 $CIGImageVersions = Get-AzGalleryImageVersion -GalleryName $CIGName -ResourceGroupName $CIGResourceGroupName -GalleryImageDefinitionName $CIGImageDefinitionName | Select-Object -Property Name,id
+$latestImageNumber = ($CIGImageVersions | Sort-Object -Property Name -Descending)[0].Name
+$imageVersionMaj = [int](($latestImageNumber -Split '\.')[0])
+$imageVersionMed = [int](($latestImageNumber -Split '\.')[1])
+$imageVersionMin = [int](($latestImageNumber -Split '\.')[2])
 
-$CIGImageVersions | Sort-Object -Property Name -Descending
+$imageVersionMaj = $imageVersionMaj + $imageVersionMajIncreaseStep
+$imageVersionMed = $imageVersionMed + $imageVersionMedIncreaseStep
+$imageVersionMin = $imageVersionMin + $imageVersionMinIncreaseStep
 
+$CIGImageVersion = "$imageVersionMaj.$imageVersionMed.$imageVersionMin"
 
 $sourceImageId = "/subscriptions/$SubscriptionID/resourceGroups/$VMResourceGroupName/providers/Microsoft.Compute/virtualMachines/$VMName"
 New-AzGalleryImageVersion -ResourceGroupName $CIGResourceGroupName -GalleryName $CIGName -GalleryImageDefinitionName $CIGImageDefinitionName -Name $CIGImageVersion -Location $location -SourceImageId $sourceImageId
