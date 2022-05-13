@@ -156,22 +156,27 @@ function ShutdownVM {
     #Getting sessionhosts with an active session count of 0 (no users connected)
     $hostsToProcess = $sessionHosts | Where-Object Session -eq 0
 
-    #Retrieving the VMs tagged for update  
-    $hostpoolVMs = Get-AzVM -VMResourceGroupName $VMResourceGroupName -Status | Select-Object Name, PowerState
+    #Retrieving the VMs belonging to the hostpool VM resource group  
+    $hostpoolVMs = Get-AzVM -VMResourceGroupName $VMResourceGroupName -Status | Select-Object Name
         
     #Looping through our host list
     foreach ($sh in $hostsToProcess) {
         $Error.clear()
+        #Extracting VM name from hostname
         $hpHost = Get-VMNameFromSessionHost($sh)
         Write-Output "hpHost is $hpHost"
                 
         foreach ($vm in $hostpoolVMs) {
             Write-Output "vmName is $vm.Name"
             #checking whether the host matches any of the VMs names
-            if ($hpHost -eq $vm.Name) {
+            if ($hpHost -eq $vm.Name)
+            {
 
-                Stop-AzVM -ResourceGroupName $VMResourceGroupName -Name $vm.Name -Force
-            
+              $powerState = Get-AzVM -ResourceGroupName $vm.ResourceGroupName -Name $vm.Name -Status 
+              if($powerState.Statuses.DisplayStatus[1] -eq "VM running")
+              {  
+                Write-Output "Stopping virtual machine...$($vms.Name)"
+                Stop-AzVM -ResourceGroupName $vms.ResourceGroupName -Name $vms.Name -Force
                 if (!$Error[0])
                 {
                     $success += 1
@@ -180,23 +185,34 @@ function ShutdownVM {
                 {
                     $failed += 1
                 }
+              }   
+              else
+              {
+                  Write-output "Virtual machine $($vms.Name) is already in stopped/deallocated state"
+                  $skipped +=1
+              }
+            }
 
 
-            }  
+
+
+          }  
         }
         
+      $outputObject = [PSCustomObject]@{
+        HostPoolName = $HostPoolName
+        TotalHosts = $totalHosts
+        ProcessedHosts = ($hostsToProcess).count
+        VMStoppedSuccess = $success
+        VMStoppedFailure = $failed
+        VMsSkipped = $skipped
+      }
+  
+      return $outputObject 
     }
 
-    $outputObject = [PSCustomObject]@{
-      HostPoolName = $HostPoolName
-      TotalHosts = $totalHosts
-      ProcessedHosts = ($hostsToProcess).count
-      VMStoppedSuccess = $success
-      VMStoppedFailure = $failed
-    }
+    
 
-    return $outputObject
-}
 
 $outToLogicApp = ShutdownVM -HostPoolName $HostPoolName -VMResourceGroupName $VMResourceGroupName
 
