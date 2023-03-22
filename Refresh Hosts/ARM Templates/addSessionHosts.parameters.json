@@ -54,6 +54,13 @@
         "availabilitySetName": {
             "value": ""
         },
+
+        "aadJoin": {
+            "value": false
+        },
+        "intune": {
+            "value": false
+        },
         "domain": {
             "value": "domainFQDN"
         },
