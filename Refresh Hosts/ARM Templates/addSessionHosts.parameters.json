@@ -77,7 +77,7 @@
               }
         },
         "artifacts-location": {
-            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip"
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_01-19-2023.zip"
         },
         "hostpoolName": {
             "value": "hostpool-name"

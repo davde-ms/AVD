@@ -98,6 +98,20 @@
             "description": "The name of avaiability set to be used when create the VMs."
             }
         },
+        "aadJoin": {
+            "type": "bool",
+            "metadata": {
+                "description": "Set to true if you want to AAD Join, false if AD join"
+            },
+            "defaultValue": false
+        },
+        "intune": {
+            "type": "bool",
+            "metadata": {
+                "description": "IMPORTANT: Please don't use this parameter as intune enrollment is not supported yet. True if intune enrollment is selected.  False otherwise"
+            },
+            "defaultValue": false
+        },
         "domain": {
             "type": "string",
             "metadata": {
@@ -294,6 +308,28 @@
             }
         },
         {
+        "condition": "[parameters('aadJoin')]",
+        "apiVersion": "2021-07-01",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+       "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/aadjoin')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]"
+            ],
+        "copy": {
+          "name": "aadLoop",
+          "count": "[parameters('vmCount')]"
+        },
+        "properties": {
+          "publisher": "Microsoft.Azure.ActiveDirectory",
+          "type": "AADLoginForWindows",
+          "typeHandlerVersion": "1.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": "[if(parameters('intune'), createObject('mdmId','0000000a-0000-0000-c000-000000000000'), json('null'))]"
+        }
+      },
+        {
+            "condition": "[not(parameters('aadJoin'))]",
             "apiVersion": "2018-10-01",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "copy": {

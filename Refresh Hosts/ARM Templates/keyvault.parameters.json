@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "avd-infra"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "accessPolicies": {
+            "value": []
+        },
+        "tenant": {
+            "value": "c6b9df26-095d-4a90-a4f5-1014558acb6c"
+        },
+        "enabledForDeployment": {
+            "value": false
+        },
+        "enabledForTemplateDeployment": {
+            "value": true
+        },
+        "enabledForDiskEncryption": {
+            "value": false
+        },
+        "enableRbacAuthorization": {
+            "value": true
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        },
+        "enableSoftDelete": {
+            "value": true
+        },
+        "softDeleteRetentionInDays": {
+            "value": 7
+        },
+        "networkAcls": {
+            "value": {
+                "defaultAction": "deny",
+                "bypass": "AzureServices",
+                "ipRules": [],
+                "virtualNetworkRules": []
+            }
+        }
+    }
+}
