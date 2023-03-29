@@ -2,6 +2,19 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        
+        "location": {
+            "type": "string",
+            "allowedValues": [
+                "canadacentral",
+                "canadaeast"
+            ],
+            "metadata": {
+                "description": "The Azure region for the deployment."
+            },
+            "defaultValue": "canadacentral"
+        },
+
         "vmCount": {
             "type": "int",
             "metadata": {
@@ -215,7 +228,7 @@
                 "count": "[parameters('vmCount')]"
             },
             "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "tags": {
                 "DoNotShutDownDays": "0"
             },
@@ -269,7 +282,7 @@
                 "count": "[parameters('vmCount')]"
               },
             "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '-nic')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "properties": {
                 "ipConfigurations": [
                     {
@@ -293,7 +306,7 @@
             },
             "name": "[concat('shutdown-computevm-', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]",
 
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]"
             ],
@@ -337,7 +350,7 @@
                 "count": "[parameters('vmCount')]"
             },
             "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/joindomain')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'))]"
             ],
@@ -366,7 +379,7 @@
                 "count": "[parameters('vmCount')]"
             },
             "name": "[concat(parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/dscextension')]",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('vmPrefix'), '-', padLeft (add(copyindex(), parameters('vmStartNumber')), 3, '0'), '/extensions/joindomain')]"
             ],
