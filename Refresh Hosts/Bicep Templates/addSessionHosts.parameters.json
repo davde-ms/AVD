@@ -9,30 +9,40 @@
       "value": 2
     },
     "vmPrefix": {
-      "value": "AADJVM"
+      "value": "Prefix used to build the VM name (cannot be longer than 11 characters)"
     },
     "vmStartNumber": {
-      "value": 2
+      "value": 0
     },
-    "vmSize": {
+    "vmSKU": {
       "value": "Standard_B2ms"
     },
     "localAdminUsername": {
-      "value": "ddebacker"
+      "reference": {
+        "keyVault": {
+          "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('avdSubscriptionId')), format('{1}', parameters('kvResourceGroupName'))), 'Microsoft.KeyVault/vaults', parameters('avdKvName'))]"
+        },
+        "secretName": "localAdminUsername"
+      }
     },
     "localAdminPassword": {
-      "value": "Lilly23/02/1999"
+      "reference": {
+        "keyVault": {
+          "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('avdSubscriptionId')), format('{1}', parameters('kvResourceGroupName'))), 'Microsoft.KeyVault/vaults', parameters('avdKvName'))]"
+        },
+        "secretName": "localAdminPassword"
+      }
     },
-    "useSIG": {
+    "useACG": {
       "value": false
     },
-    "SIG_rg": {
+    "ACG_rg": {
       "value": ""
     },
-    "SIGName": {
+    "ACG_Name": {
       "value": ""
     },
-    "SIGDefinition": {
+    "ACG_ImageDefinition_Name": {
       "value": ""
     },
     "diskType": {
@@ -45,7 +55,7 @@
       "value": "AvailabilityZone"
     },
     "availabilitySetName": {
-      "value": ""
+      "value": "Availability set your VMs will be in (if you choose AvailabilitySet)"
     },
     "aadJoin": {
       "value": true
@@ -54,34 +64,49 @@
       "value": false
     },
     "domain": {
-      "value": ""
+      "value": "Active Directory domain name in GQDN format"
     },
     "OUPath": {
-      "value": ""
+      "value": "LDAP path to the OU you want your VMs to be created in"
     },
     "domainJoinerUPN": {
-      "value": ""
+      "reference": {
+        "keyVault": {
+          "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('avdSubscriptionId')), format('{1}', parameters('kvResourceGroupName'))), 'Microsoft.KeyVault/vaults', parameters('avdKvName'))]"
+        },
+        "secretName": "name of the secret containing the domain joiner UPN"
+      }
     },
     "domainJoinerPassword": {
-      "value": ""
+      "reference": {
+        "keyVault": {
+          "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('avdSubscriptionId')), format('{1}', parameters('kvResourceGroupName'))), 'Microsoft.KeyVault/vaults', parameters('avdKvName'))]"
+        },
+        "secretName": "name of the secret containing the domain joiner password"
+      }
     },
     "artifacts_location": {
       "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_01-19-2023.zip"
     },
     "hostpoolName": {
-      "value": "testaadj"
+      "value": "name of the hostpool you want your VMs to join"
     },
     "hostpoolToken": {
-      "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZGRUVBOUNCM0ZERDQ1RTVCNkQyN0JGQzgwNzMxRTdFOUI1RDU4RDgiLCJ0eXAiOiJKV1QifQ.eyJSZWdpc3RyYXRpb25JZCI6ImE3OWVlYmI4LTMzMmEtNGFkYy1iNmM2LWNhOGFhNjRhM2E5NyIsIkJyb2tlclVyaSI6Imh0dHBzOi8vcmRicm9rZXItZy11cy1yMC53dmQubWljcm9zb2Z0LmNvbS8iLCJEaWFnbm9zdGljc1VyaSI6Imh0dHBzOi8vcmRkaWFnbm9zdGljcy1nLXVzLXIwLnd2ZC5taWNyb3NvZnQuY29tLyIsIkVuZHBvaW50UG9vbElkIjoiZmIyNzI1NzQtNjhiNS00NDg0LWJiYzMtYmJjZDdiMzNkNGRjIiwiR2xvYmFsQnJva2VyVXJpIjoiaHR0cHM6Ly9yZGJyb2tlci53dmQubWljcm9zb2Z0LmNvbS8iLCJHZW9ncmFwaHkiOiJVUyIsIkdsb2JhbEJyb2tlclJlc291cmNlSWRVcmkiOiJodHRwczovL2ZiMjcyNTc0LTY4YjUtNDQ4NC1iYmMzLWJiY2Q3YjMzZDRkYy5yZGJyb2tlci53dmQubWljcm9zb2Z0LmNvbS8iLCJCcm9rZXJSZXNvdXJjZUlkVXJpIjoiaHR0cHM6Ly9mYjI3MjU3NC02OGI1LTQ0ODQtYmJjMy1iYmNkN2IzM2Q0ZGMucmRicm9rZXItZy11cy1yMC53dmQubWljcm9zb2Z0LmNvbS8iLCJEaWFnbm9zdGljc1Jlc291cmNlSWRVcmkiOiJodHRwczovL2ZiMjcyNTc0LTY4YjUtNDQ4NC1iYmMzLWJiY2Q3YjMzZDRkYy5yZGRpYWdub3N0aWNzLWctdXMtcjAud3ZkLm1pY3Jvc29mdC5jb20vIiwiQUFEVGVuYW50SWQiOiJjNmI5ZGYyNi0wOTVkLTRhOTAtYTRmNS0xMDE0NTU4YWNiNmMiLCJuYmYiOjE2ODA2MTYwODgsImV4cCI6MTY4MjY1NDQwMCwiaXNzIjoiUkRJbmZyYVRva2VuTWFuYWdlciIsImF1ZCI6IlJEbWkifQ.Med5NoRKTPLNyX6uVyC2YHBNkazY-PnsI-xtjwddtjnsgFxGZ3QfvSTYasPzQAEGgUzKC9EOzyI5w5dha-5i4Qi6ZxmZIvcXLc6StppwFg-vgpQbwEq2mne3fwnWMiNL3x9Az7upB9rhtHPvUpornqEIhsgIGX_2zA9ifWTqYWPwpO1Ylawr8YIMmhGhdfe5XWEukVCMfjhXxkwBln0_ox-JKhzEXwALf_5FQq6ahN6oK0bD-JE_jsQwAELHveHWBbyFYKz9ygS8_VK6tcUE8EcFJ9frsx9qUXIN8EprnjYtU3Vnc_wC_n4L4bmB_pmn-0UNA3OKsaeb_FHkirlyvg"
+      "reference": {
+        "keyVault": {
+          "id": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', format('{0}', parameters('avdSubscriptionId')), format('{1}', parameters('kvResourceGroupName'))), 'Microsoft.KeyVault/vaults', parameters('avdKvName'))]"
+        },
+        "secretName": "name of the secret containing the hostpool token"
+      }
     },
     "subnetName": {
-      "value": "testaadjsn"
+      "value": "name of the subnet you want to attach your VMs to"
     },
     "vNetId": {
-      "value": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_mycorplabs_avd_eastus/providers/Microsoft.Network/virtualNetworks/vnet-mycorplabs-avd-eastus"
+      "value": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/your_vnet_resourcegroup/providers/Microsoft.Network/virtualNetworks/your_vnet_name"
     },
     "autoShutdownStatus": {
-      "value": "Disabled"
+      "value": "Enabled"
     },
     "autoShutdownTime": {
       "value": "19:00"
