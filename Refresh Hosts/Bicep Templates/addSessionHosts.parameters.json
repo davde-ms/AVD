@@ -1,0 +1,93 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "customTags1": {
+      "value": {}
+    },
+    "vmCount": {
+      "value": 2
+    },
+    "vmPrefix": {
+      "value": "AADJVM"
+    },
+    "vmStartNumber": {
+      "value": 2
+    },
+    "vmSize": {
+      "value": "Standard_B2ms"
+    },
+    "localAdminUsername": {
+      "value": "ddebacker"
+    },
+    "localAdminPassword": {
+      "value": "Lilly23/02/1999"
+    },
+    "useSIG": {
+      "value": false
+    },
+    "SIG_rg": {
+      "value": ""
+    },
+    "SIGName": {
+      "value": ""
+    },
+    "SIGDefinition": {
+      "value": ""
+    },
+    "diskType": {
+      "value": "Premium_LRS"
+    },
+    "osDiskSize": {
+      "value": 128
+    },
+    "availabilityOption": {
+      "value": "AvailabilityZone"
+    },
+    "availabilitySetName": {
+      "value": ""
+    },
+    "aadJoin": {
+      "value": true
+    },
+    "intune": {
+      "value": false
+    },
+    "domain": {
+      "value": ""
+    },
+    "OUPath": {
+      "value": ""
+    },
+    "domainJoinerUPN": {
+      "value": ""
+    },
+    "domainJoinerPassword": {
+      "value": ""
+    },
+    "artifacts_location": {
+      "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_01-19-2023.zip"
+    },
+    "hostpoolName": {
+      "value": "testaadj"
+    },
+    "hostpoolToken": {
+      "value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZGRUVBOUNCM0ZERDQ1RTVCNkQyN0JGQzgwNzMxRTdFOUI1RDU4RDgiLCJ0eXAiOiJKV1QifQ.eyJSZWdpc3RyYXRpb25JZCI6ImE3OWVlYmI4LTMzMmEtNGFkYy1iNmM2LWNhOGFhNjRhM2E5NyIsIkJyb2tlclVyaSI6Imh0dHBzOi8vcmRicm9rZXItZy11cy1yMC53dmQubWljcm9zb2Z0LmNvbS8iLCJEaWFnbm9zdGljc1VyaSI6Imh0dHBzOi8vcmRkaWFnbm9zdGljcy1nLXVzLXIwLnd2ZC5taWNyb3NvZnQuY29tLyIsIkVuZHBvaW50UG9vbElkIjoiZmIyNzI1NzQtNjhiNS00NDg0LWJiYzMtYmJjZDdiMzNkNGRjIiwiR2xvYmFsQnJva2VyVXJpIjoiaHR0cHM6Ly9yZGJyb2tlci53dmQubWljcm9zb2Z0LmNvbS8iLCJHZW9ncmFwaHkiOiJVUyIsIkdsb2JhbEJyb2tlclJlc291cmNlSWRVcmkiOiJodHRwczovL2ZiMjcyNTc0LTY4YjUtNDQ4NC1iYmMzLWJiY2Q3YjMzZDRkYy5yZGJyb2tlci53dmQubWljcm9zb2Z0LmNvbS8iLCJCcm9rZXJSZXNvdXJjZUlkVXJpIjoiaHR0cHM6Ly9mYjI3MjU3NC02OGI1LTQ0ODQtYmJjMy1iYmNkN2IzM2Q0ZGMucmRicm9rZXItZy11cy1yMC53dmQubWljcm9zb2Z0LmNvbS8iLCJEaWFnbm9zdGljc1Jlc291cmNlSWRVcmkiOiJodHRwczovL2ZiMjcyNTc0LTY4YjUtNDQ4NC1iYmMzLWJiY2Q3YjMzZDRkYy5yZGRpYWdub3N0aWNzLWctdXMtcjAud3ZkLm1pY3Jvc29mdC5jb20vIiwiQUFEVGVuYW50SWQiOiJjNmI5ZGYyNi0wOTVkLTRhOTAtYTRmNS0xMDE0NTU4YWNiNmMiLCJuYmYiOjE2ODA2MTYwODgsImV4cCI6MTY4MjY1NDQwMCwiaXNzIjoiUkRJbmZyYVRva2VuTWFuYWdlciIsImF1ZCI6IlJEbWkifQ.Med5NoRKTPLNyX6uVyC2YHBNkazY-PnsI-xtjwddtjnsgFxGZ3QfvSTYasPzQAEGgUzKC9EOzyI5w5dha-5i4Qi6ZxmZIvcXLc6StppwFg-vgpQbwEq2mne3fwnWMiNL3x9Az7upB9rhtHPvUpornqEIhsgIGX_2zA9ifWTqYWPwpO1Ylawr8YIMmhGhdfe5XWEukVCMfjhXxkwBln0_ox-JKhzEXwALf_5FQq6ahN6oK0bD-JE_jsQwAELHveHWBbyFYKz9ygS8_VK6tcUE8EcFJ9frsx9qUXIN8EprnjYtU3Vnc_wC_n4L4bmB_pmn-0UNA3OKsaeb_FHkirlyvg"
+    },
+    "subnetName": {
+      "value": "testaadjsn"
+    },
+    "vNetId": {
+      "value": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_mycorplabs_avd_eastus/providers/Microsoft.Network/virtualNetworks/vnet-mycorplabs-avd-eastus"
+    },
+    "autoShutdownStatus": {
+      "value": "Disabled"
+    },
+    "autoShutdownTime": {
+      "value": "19:00"
+    },
+    "autoShutdownTimeZone": {
+      "value": "Eastern Standard Time"
+    }
+  }
+}
