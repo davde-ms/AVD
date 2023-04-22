@@ -1,18 +1,6 @@
 @description('The name of the resource group to deploy the resources to.')
 param location string = resourceGroup().location
 
-@description('Do not modify, used to set unique value for resource deployment.')
-param time string = utcNow()
-
-@description('AVD subscription ID containing the keyvault used for the deployment.')
-param avdSubscriptionId string
-
-@description('The name of the resource group containing the keyvault storing the AVD secrets.')
-param avdKvResourceGroupName string
-
-@description('The name of the keyvault storing the AVD secrets.')
-param avdKvName string
-
 @description('Tags for cost allocation')
 param customTags1 object
 
@@ -35,7 +23,7 @@ param vmSKU string
   'None'
 ])
 @description('The GPU type to use for the hosts. This will determine which GPU drivers will be installed in the hosts if any')
-param gpuType string
+param gpuType string = 'None'
 
 @description('The username for the local admininistrator account.')
 param localAdminUsername string
@@ -144,11 +132,6 @@ var vmAvailabilitySetResourceId = {
 // =========== //
 // Deployments //
 // =========== //
-
-resource avdKv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
-  name: avdKvName
-  scope: resourceGroup(avdSubscriptionId, avdKvResourceGroupName)
-}
 
 resource compute 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, vmCount): {
   name: '${vmPrefix}-${padLeft((i + vmStartNumber), 3, '0')}'

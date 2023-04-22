@@ -17,10 +17,19 @@
     "vmSKU": {
       "value": "Standard_B2ms"
     },
+    "avdSubscriptionId": {
+      "value": "a4292ece-b0e4-4725-ac3e-a8d8d8ff1468"
+    },
+    "avdKvResourceGroupName": {
+      "value": "rg_avd_infra_eastus"
+    },
+    "avdKvName": {
+      "value": "avd-infra"
+    },
     "localAdminUsername": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+          "id": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_avd_infra_eastus/providers/Microsoft.KeyVault/vaults/avd-infra"
 
         },
         "secretName": "localAdminUsername"
@@ -29,7 +38,7 @@
     "localAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+          "id": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_avd_infra_eastus/providers/Microsoft.KeyVault/vaults/avd-infra"
         },
         "secretName": "localAdminPassword"
       }
@@ -76,7 +85,7 @@
     "domainJoinerUPN": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+          "id": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_avd_infra_eastus/providers/Microsoft.KeyVault/vaults/avd-infra"
         },
         "secretName": "domainJoinerUPN"
       }
@@ -84,7 +93,7 @@
     "domainJoinerPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+          "id": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_avd_infra_eastus/providers/Microsoft.KeyVault/vaults/avd-infra"
         },
         "secretName": "domainJoinerPassword"
       }
@@ -98,7 +107,7 @@
     "hostpoolToken": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx/resourceGroups/keyvaultRGName/providers/Microsoft.KeyVault/vaults/keyvaultName"
+          "id": "/subscriptions/a4292ece-b0e4-4725-ac3e-a8d8d8ff1468/resourceGroups/rg_avd_infra_eastus/providers/Microsoft.KeyVault/vaults/avd-infra"
         },
         "secretName": "testaadj-token"
       }
