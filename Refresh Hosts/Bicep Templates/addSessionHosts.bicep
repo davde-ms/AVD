@@ -111,6 +111,7 @@ param autoShutdownTime string
 @description('The Time Zone to use for autoShutdownTime.')
 param autoShutdownTimeZone string
 
+
 // ==================== //
 // Variable declaration //
 // ==================== //
@@ -175,9 +176,12 @@ resource compute 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
     }
     licenseType: 'Windows_Client'
   }
-  zones: [
-    ((availabilityOption == 'AvailabilityZone') ? string((((i + 0) % 3) + 1)) : json('null'))
-  ]
+  //zones: [
+  //  ((availabilityOption == 'AvailabilityZone') ? string((((i + 0) % 3) + 1)) : json('null'))
+  //]
+
+  zones: availabilityOption == 'AvailabilityZone' ? array((((i + 0) % 3) + 1)) : null
+
   dependsOn: [
     nic
   ]
@@ -201,8 +205,8 @@ resource nic 'Microsoft.Network/networkInterfaces@2018-10-01' = [for i in range(
   }
 }]
 
-resource autoshutdown 'Microsoft.DevTestLab/schedules@2017-04-26-preview' = [for i in range(0, vmCount): {
-  name: 'shutdown-vm-${vmPrefix}-${padLeft((i + vmStartNumber), 3, '0')}'
+resource autoshutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = [for i in range(0, vmCount): {
+  name: 'shutdown-computevm-${vmPrefix}-${padLeft((i + vmStartNumber), 3, '0')}'
   location: location
   properties: {
     status: autoShutdownStatus
@@ -228,7 +232,7 @@ resource aadjoinext 'Microsoft.Compute/virtualMachines/extensions@2021-07-01' = 
     autoUpgradeMinorVersion: true
     settings: (intune ? {
       mdmId: '0000000a-0000-0000-c000-000000000000'
-    } : json('null'))
+    } : null)
   }
   dependsOn: [
     compute
