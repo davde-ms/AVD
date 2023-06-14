@@ -1,0 +1,18 @@
+{
+    "Name": "Custom Gallery Image Role",
+    "IsCustom": true,
+    "Description": "Custom role that grants access to gallery images",
+    "Actions": [
+      "Microsoft.Compute/galleries/read",
+      "Microsoft.Compute/galleries/images/read",
+      "Microsoft.Compute/galleries/images/versions/read",
+      "Microsoft.Compute/galleries/images/versions/write",
+      "Microsoft.Compute/images/write",
+      "Microsoft.Compute/images/read",
+      "Microsoft.Compute/images/delete"
+    ],
+    "AssignableScopes": [
+      "/subscriptions/{subscriptionId}"
+    ]
+  }
+  
