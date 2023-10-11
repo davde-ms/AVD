@@ -1,5 +1,6 @@
 <#Author       : David De Backer (based on a script by Akash Chawla)
 # Usage        : Install and software package ABC
+# This is a prototype script, not production ready
 #>
 
 ###############
