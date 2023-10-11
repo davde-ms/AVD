@@ -120,12 +120,13 @@ var subnetId = '${vNetId}/subnets/${subnetName}'
 var ACG_ImageDefinition_Reference = {
   id: resourceId(ACG_rg, 'Microsoft.Compute/galleries/images', ACG_Name, ACG_ImageDefinition_Name)
 }
-var win10ImageRef = {
+var ImageRef = {
   publisher: 'MicrosoftWindowsDesktop'
-  offer: 'Windows-11'
-  sku: 'win11-22h2-avd'
+  offer: 'windows-11'
+  sku: 'win11-22h2-ent'
   version: 'latest'
 }
+
 var vmAvailabilitySetResourceId = {
   id: resourceId('Microsoft.Compute/availabilitySets/', availabilitySetName)
 }
@@ -152,7 +153,7 @@ resource compute 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
       adminPassword: localAdminPassword
     }
     storageProfile: {
-      imageReference: (useACG ? ACG_ImageDefinition_Reference : win10ImageRef)
+      imageReference: (useACG ? ACG_ImageDefinition_Reference : ImageRef)
       osDisk: {
         name: '${vmPrefix}-${padLeft((i + vmStartNumber), 3, '0')}-disk'
         createOption: 'FromImage'
@@ -259,7 +260,7 @@ resource joindomainext 'Microsoft.Compute/virtualMachines/extensions@2022-08-01'
     }
   }
   dependsOn: [
-    compute
+      hostpooladd
   ]
 }]
 
@@ -317,6 +318,7 @@ resource hostpooladd 'Microsoft.Compute/virtualMachines/extensions@2022-08-01' =
     }
   }
   dependsOn: [
+    compute
     aadjoinext
   ]
 }]

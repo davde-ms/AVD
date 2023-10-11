@@ -1,7 +1,7 @@
 {
-    "Name": "Custom Gallery Image Role",
+    "Name": "Custom Image Template Builder Gallery Image Contributor",
     "IsCustom": true,
-    "Description": "Custom role that grants access to gallery images",
+    "Description": "Custom role that grants creation access to gallery images",
     "Actions": [
       "Microsoft.Compute/galleries/read",
       "Microsoft.Compute/galleries/images/read",
@@ -11,8 +11,11 @@
       "Microsoft.Compute/images/read",
       "Microsoft.Compute/images/delete"
     ],
+    "NotActions": [],
+    "DataActions": [],
+    "NotDataActions": [],
     "AssignableScopes": [
-      "/subscriptions/{subscriptionId}"
+      "/subscriptions/00000000-0000-0000-0000-000000000000"
     ]
   }
   
