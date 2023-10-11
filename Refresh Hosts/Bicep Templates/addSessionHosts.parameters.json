@@ -6,10 +6,10 @@
       "value": {}
     },
     "vmCount": {
-      "value": 2
+      "value": 3
     },
     "vmPrefix": {
-      "value": "adj"
+      "value": "AVD-CONSULT"
     },
     "vmStartNumber": {
       "value": 0
