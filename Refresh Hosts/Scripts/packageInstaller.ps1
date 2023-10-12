@@ -17,7 +17,7 @@ Param (
 ########################
 $localDownloadPath            = "c:\temp\install\"
 $packageZipName             = 'package.zip'
-
+$packageZipNameURI          = "full_http_path_to_package.zip like https://www.example.com/package.zip. That URL should be accessible from the host where the script is executed"
 
 ##############################
 # Test/Create Temp Directory #
